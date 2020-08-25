@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MessengerService } from 'src/app/services/messenger.service'
+import { CartService } from 'src/app/services/cart.service'
+import { CartItemService } from 'src/app/services/cart-item.service'
 import { Product } from 'src/app/models/product';
+import { Cart } from 'src/app/models/cart';
+import { CartItem } from 'src/app/models/cart-item';
 
 @Component({
   selector: 'app-cart',
@@ -9,52 +13,67 @@ import { Product } from 'src/app/models/product';
 })
 export class CartComponent implements OnInit {
 
-  private cartId: string = '';
+  private cartId: number = 0;
+  private cartStatus: string = '';
 
-  cartItems = [
-    /*     { id: 1, productId: 1, cartId: 1, productName: 'Test 1', quantity: 4, price: 100, },
-        { id: 2, productId: 3, cartId: 1, productName: 'Test 3', quantity: 5, price: 30, },
-        { id: 3, productId: 2, cartId: 1, productName: 'Test 2', quantity: 10, price: 50, },
-        { id: 4, productId: 4, cartId: 1, productName: 'Test 4', quantity: 20, price: 20, }, */
+  cartItems: CartItem[] = [
   ];
 
   cartTotal = 0;
-  constructor(private msg: MessengerService) { }
+  constructor(
+    private msg: MessengerService,
+    private cartService: CartService,
+    private cartItemService: CartItemService
+  ) { }
 
   ngOnInit(): void {
+    this.setCart();
+    this.refreshCartItems();
     this.msg.getMsg().subscribe((product: Product) => {
       this.addProductToCart(product);
     });
-    //search if cartId is saved in lcoal storage
-    //search it in the api
-    //if found:
-    //Populate data:
-    //Else:
-    //create new cart
+  }
+
+  refreshCartItems() {
+    this.cartService.getCartItems(this.cartId).subscribe((cart) => {
+      this.cartItems = cart.cartItems;
+    })
+  }
+
+  setCart() {
+    this.cartId = Number(localStorage.getItem('cartId'));
+    this.cartStatus = localStorage.getItem('cartStatus');
+    if (!this.cartId)
+      this.cartService.createCart().subscribe((cart: Cart) => {
+        this.cartId = cart.id;
+        this.cartStatus = cart.status;
+        localStorage.setItem('cartId', String(this.cartId));
+        localStorage.setItem('cartStatus', String(this.cartStatus));
+      })
   }
 
   addProductToCart(product: Product) {
     let found = false;
     for (let i in this.cartItems) {
-      if (this.cartItems[i].productId === product.id) {
+      if (this.cartItems[i].product.id === product.id) {
         this.cartItems[i].quantity++;
+        this.cartItemService.updateCartItem(this.cartItems[i]).subscribe((cartItem) => { });
         found = true;
         break;
       }
     }
     if (!found) {
-      this.cartItems.push({
-        productId: product.id,
-        productName: product.name,
-        quantity: 1,
-        price: product.price
-      })
+      //POST new productcart
+      const cartIt = new CartItem(product, this.cartId);
+      this.cartItemService.createCartItem(cartIt).subscribe((cartItem) => {
+        this.cartItems.push(cartItem);
+      });
     }
-    //TODO move this function to an another one
-    //save into the api
+
+
     this.cartTotal = 0;
     this.cartItems.forEach(item => {
-      this.cartTotal += (item.quantity * item.price)
+      this.cartTotal += (item.quantity * item.product.price)
     });
   }
 

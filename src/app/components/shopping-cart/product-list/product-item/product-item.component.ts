@@ -12,7 +12,9 @@ export class ProductItemComponent implements OnInit {
 
   @Input() productItem: Product
 
-  constructor(private msg: MessengerService) { }
+  constructor(
+    private msg: MessengerService,
+  ) { }
 
   ngOnInit(): void {
   }
