@@ -30,4 +30,8 @@ export class CartService {
       quantity: 1
     });
   }
+
+  updateCart(cartId: number): Observable<CartItem> {
+    return this.http.put<CartItem>(`${carstUrl}/${cartId}`, { status: 'completed' });
+  }
 }

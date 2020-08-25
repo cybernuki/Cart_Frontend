@@ -1,4 +1,10 @@
-<div class="cart-item">
-    <span>{{cartItem.product.name}}</span> x <span>{{cartItem.quantity}}</span>:
+<div class="cart-item row">
+    <span>{{cartItem.product.name |slice: 0:10}}... x {{cartItem.quantity}}</span>:
+
+</div>
+<div class="cart-item row">
+
+</div>
+<div class="cart-item row">
     <strong>{{ cartItem.quantity * cartItem.product.price | currency:'USD'}}</strong>
 </div>

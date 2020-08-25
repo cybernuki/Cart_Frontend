@@ -36,7 +36,13 @@ export class CartComponent implements OnInit {
 
   refreshCartItems() {
     this.cartService.getCartItems(this.cartId).subscribe((cart) => {
-      this.cartItems = cart.cartItems;
+      if (cart.id) {
+        this.cartItems = cart.cartItems;
+        this.cartTotal = 0;
+        this.cartItems.forEach(item => {
+          this.cartTotal += (item.quantity * item.product.price)
+        });
+      }
     })
   }
 
@@ -69,12 +75,20 @@ export class CartComponent implements OnInit {
         this.cartItems.push(cartItem);
       });
     }
-
-
     this.cartTotal = 0;
     this.cartItems.forEach(item => {
       this.cartTotal += (item.quantity * item.product.price)
     });
   }
 
+  payCart() {
+    this.cartService.updateCart(this.cartId).subscribe((cart) => {
+    });
+    this.cartService.createCart().subscribe((cart) => {
+      localStorage.setItem('cartId', String(cart.id));
+      localStorage.setItem('cartStatus', cart.status);
+      this.setCart();
+      this.refreshCartItems();
+    })
+  }
 }
