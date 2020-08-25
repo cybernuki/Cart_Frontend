@@ -5,6 +5,7 @@ import { CartItemService } from 'src/app/services/cart-item.service'
 import { Product } from 'src/app/models/product';
 import { Cart } from 'src/app/models/cart';
 import { CartItem } from 'src/app/models/cart-item';
+import { CartItemMessengerService } from 'src/app/services/cart-item-messenger.service';
 
 @Component({
   selector: 'app-cart',
@@ -23,7 +24,8 @@ export class CartComponent implements OnInit {
   constructor(
     private msg: MessengerService,
     private cartService: CartService,
-    private cartItemService: CartItemService
+    private cartItemService: CartItemService,
+    private msgCartItem: CartItemMessengerService
   ) { }
 
   ngOnInit(): void {
@@ -32,6 +34,9 @@ export class CartComponent implements OnInit {
     this.msg.getMsg().subscribe((product: Product) => {
       this.addProductToCart(product);
     });
+    this.msgCartItem.getMsg().subscribe((cartItem: CartItem) => {
+      this.removeProductToCart(cartItem);
+    })
   }
 
   refreshCartItems() {
@@ -56,6 +61,12 @@ export class CartComponent implements OnInit {
         localStorage.setItem('cartId', String(this.cartId));
         localStorage.setItem('cartStatus', String(this.cartStatus));
       })
+  }
+
+  removeProductToCart(cartItem: CartItem) {
+    this.cartItemService.deleteCartItem(cartItem).subscribe(() => {
+      this.refreshCartItems()
+    })
   }
 
   addProductToCart(product: Product) {
