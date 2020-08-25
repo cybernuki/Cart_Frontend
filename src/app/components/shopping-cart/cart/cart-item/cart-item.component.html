@@ -3,8 +3,9 @@
 
 </div>
 <div class="cart-item row">
-
+    <strong>{{ cartItem.quantity * cartItem.product.price | currency:'USD'}}</strong>
 </div>
 <div class="cart-item row">
-    <strong>{{ cartItem.quantity * cartItem.product.price | currency:'USD'}}</strong>
+    <button type="button" class="btn btn-sm btn-secondary product-btn" (click)="handleRemoveCartItem()">
+        remove</button>
 </div>
