@@ -1,19 +1,26 @@
 <div class="card filters">
     <div class="card-header">
-        <strong>Filters</strong>
+        <strong>Product</strong>
     </div>
     <div class="card-body">
         <form>
             <div class="form-group">
-                <label for="from">From</label>
-                <input type="number" id="from" class="form-control">
+                <label for="name">Name</label>
+                <input id="name" class="form-control" name="name" [(ngModel)]="model.name">
             </div>
             <div class="form-group">
-                <label for="to">To</label>
-                <input type="number" id="to" class="form-control">
+                <label for="description">Description</label>
+                <input id="description" class="form-control" name="description" [(ngModel)]="model.description">
             </div>
-
-            <button class="btn btn-primary btn-bloc btn-sm">Filter by Price</button>
+            <div class="form-group">
+                <label for="sku">SKU</label>
+                <input id="sku" class="form-control" name="sku" [(ngModel)]="model.sku">
+            </div>
+            <div class="form-group">
+                <label for="price">price</label>
+                <input type="number" id="price" class="form-control" name="price" [(ngModel)]="model.price">
+            </div>
+            <button class="btn btn-primary btn-bloc btn-sm" (click)=" HandleAddProduct()">add product</button>
         </form>
     </div>
 </div>
